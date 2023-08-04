@@ -1,3 +1,4 @@
+function pav(){
 const apiurl='https://reqres.in/api/users';
 const xhr=new XMLHttpRequest();
 xhr.open('GET',apiurl,true);
@@ -11,7 +12,19 @@ xhr.onreadystatechange=function() {
 };
 xhr.send();
 function fun(data){
-    var mad=document.querySelector('#madh tbody');
+    const cols=['Id','Email','F','S','Bomma'];
+    var tcon=document.getElementById('tc');
+    var t=document.createElement('table');
+    var th=document.createElement('thead');
+    var tr1=document.createElement('tr');
+    cols.forEach(function(r){
+        var td=document.createElement('td');
+        td.textContent=r;
+        tr1.appendChild(td);
+    });
+    th.appendChild(tr1);
+    t.appendChild(th);
+    var tb=document.createElement('tbody');
     data.forEach(function(p){
         var row=document.createElement('tr');
 
@@ -25,23 +38,26 @@ function fun(data){
 
 
         var a3=document.createElement('td');
-        a3.textContent=p.firstname;
+        a3.textContent=p.first_name;
         row.appendChild(a3);
 
 
         var a4=document.createElement('td');
-        a4.textContent=p.lastname;
+        a4.textContent=p.last_name;
         row.appendChild(a4);
 
 
         var a5=document.createElement('td');
         var a6=document.createElement('img');
-        a6.src=p.avathar;
+        a6.src=p.avatar;
         a6.alt=p.firstname;
         a5.appendChild(a6);
         row.appendChild(a5);
 
 
-        mad.append(row);
+        tb.appendChild(row);
     });
+    tcon.append(th);
+    tcon.append(tb);
+}
 }
