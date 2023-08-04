@@ -1,0 +1,203 @@
+<html>
+
+<head>
+    <h1><b>GET UR TRAIN</b></h1>
+
+    <style>
+        body {
+            background-image: url('https://images7.alphacoders.com/661/661783.jpg');
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: rgb(219, 80, 80);
+            margin-top: 50px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 5);
+
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            width: 450px;
+        }
+
+        #tableContainer {
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 10px;
+            border-radius: 10px;
+            width: 400px;
+            margin: 10px;
+        }
+    </style>
+
+</head>
+<center>
+
+    <body>
+        <div class="d-flex align-items-center">
+            <center>
+                <form onsubmit="return false;">
+                    <label><B>FROM</B></label>
+                    <input type="text" id="f">
+                    <label><B>TO</B></label>
+                    <input type="text" id="t">
+                    </br>
+                    <p><B>DATE</B><input type="date" id="d"></p>
+
+                    <button onclick="convert()" id="bb">search</button>
+                    </br></br>
+                    <label><B>TRAIN NAME</B></label>
+
+                    <select id="drop" onchange="ontrainselection()">
+                        <option option value="">
+                            choose the train
+                        </option>
+                    </select>
+                    </br></br>
+                    <label><B>CLASS</B></label>
+                    <select>
+                        <option>genral</option>
+                        <option>AC TIRE 1</option>
+                        <option>AC TIRE 2</option>
+                        <option>AC TIRE 3</option>
+                    </SELECT>
+
+            </center>
+            </form>
+
+
+            <table id="tt">
+                <thead class="sai"><b><u>PASSENGER DETAILS</u></b></thead></br></br>
+                <tr>
+                    <th>NAME</th>
+                    <th>GENDER</th>
+                    <th>AGE</th>
+                </tr>
+                <tr>
+                    <td><input type="text" id="na"></td>
+                    <td><select id="se">
+                            <option>male</option>
+                            <option>female</option>
+                    </td>
+                    <td><input type="text" id="ag"></td>
+                </tr>
+                <tbody id="tb">
+                </tbody>
+            </table></br>
+
+
+            <button onclick="alert('TKT BOOKED')">book</button>
+            <button id="b1" onclick="addtkt()">add</button>
+            <div class="sai" id="tableContainer"></div>
+            </br></br>
+
+            <table id="new">
+            </table>
+            <script>
+                let tableVisible = 0;
+                var i = 0;
+                function convert() {
+                    var res;
+                    var from = document.getElementById("f").value;
+                    var to = document.getElementById("t").value;
+                    var date = document.getElementById("d").value;
+                    var xx = new XMLHttpRequest();
+                    var url = 'https://irctc1.p.rapidapi.com/api/v3/trainBetweenStations?fromStationCode=' + encodeURIComponent(from) + '&toStationCode=' + encodeURIComponent(to) + '&dateOfJourney=' + encodeURIComponent(date);
+                    xx.open('GET', url, true);
+                    xx.setRequestHeader("X-RapidAPI-Key", "b7839f3455mshdea0177d1f9dba1p194d4ejsn4e9f67bb0081");
+                    xx.setRequestHeader("X-RapidAPI-Host", "irctc1.p.rapidapi.com");
+                    xx.onreadystatechange = function () {
+                        console.log(xx.readyState);
+                        console.log(xx.status);
+                        if (xx.readyState === 4 && xx.status === 200) {
+                            res = JSON.parse(xx.responseText);
+                            updatedrop(res);
+                        }
+                        else {
+                            console.log("error" + "" + xx.status);
+                        }
+                    };
+                    xx.send();
+                }
+                function updatedrop(data) {
+                    var dat = data.data;
+                    var dr = document.getElementById("drop");
+                    dr.innerHTML = '<option option value="">choosethetrain</option>';
+                    dat.forEach(function (train) {
+                        var option = document.createElement("option");
+                        option.value = train.train_number;
+                        option.textContent = train.train_name + "(" + train.train_number + ")";
+                        drop.appendChild(option);
+                    });
+                }
+
+
+
+                function ontrainselection() {
+                    var selecttrain = document.getElementById("drop").value;
+                    console.log("selected train", selecttrain);
+
+                }
+
+                function addtkt() {
+                    var name = document.getElementById("na").value;
+                    var gender = document.getElementById("se").value;
+                    var age = parseInt(document.getElementById("ag").value);
+                    if (isNaN(age) || age > 100 || age < 0) {
+                        alert("enter valid age");
+                        return;
+                    }
+                    console.log(age);
+                    if (tableVisible == 0) {
+                        createTable();
+                    }
+                    tableVisible++;
+                    const tabl = document.getElementById("dataTable");
+                    if (i < 6) {
+                        var r = tabl.insertRow();
+                        var c1 = r.insertCell();
+                        var c2 = r.insertCell();
+                        var c3 = r.insertCell();
+                        var c4 = r.insertCell();
+                        c1.textContent = name;
+                        c2.textContent = gender;
+                        c3.textContent = age;
+                        c4.innerHTML = '<button onclick="remove(this.parentNode.parentNode)">Delete</button>';
+                        i++;
+                    }
+                    document.getElementById('na').value = "";
+                    document.getElementById('se').value = "";
+                    document.getElementById('ag').value = "";
+
+                }
+                function createTable() {
+                    const tableContainer = document.getElementById('tableContainer');
+                    const table = document.createElement('table');
+                    table.setAttribute('id', 'dataTable');
+                    const row = table.insertRow();
+                    ['Name', 'Gender', 'Age'].forEach((x) => {
+                        const cell = row.insertCell();
+                        cell.textContent = x;
+                    });
+                    tableContainer.appendChild(table);
+                }
+
+                function remove(row) {
+                    const table = document.getElementById('dataTable');
+                    table.deleteRow(row.rowIndex);
+                    tableVisible--;
+                    i--;
+                    if (tableVisible == 0) table.parentNode.removeChild(table);
+                }
+
+
+            </script>
+        </div>
+</center>
+</body>
+
+</html>
